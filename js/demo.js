@@ -2,12 +2,12 @@
 (function($) {
 
   $('li')
-  .on($.exemple.events.ready, function(e) {
+  .on($.demo.events.ready, function(e) {
     console.log(e.type);
   })
   .on('click', function() {
-    $(this).exemple('foo');
+    $(this).demo('foo');
   })
-  .exemple({foo: 'bar'});
+  .demo({foo: 'bar'});
 
 })(jQuery);

@@ -3,7 +3,7 @@
   
   var
   conf = {
-    name: 'exemple',
+    name: 'demo',
     presets: {
       foo: 'bar'
     },
