@@ -124,6 +124,6 @@ $.pluginName.methodName( [ argument, … ] );
 
 ### Predefined methods
 
-+ **name**(): returns the plugin name
++ **getName**(): returns the plugin name
 + **local**( string ): returns a string prefixed with '*pluginName*-'
 + **space**( string ): returns a string suffixed with '.easyPlug-*pluginName*'

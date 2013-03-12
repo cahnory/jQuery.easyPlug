@@ -133,7 +133,7 @@
       };
 
     // Return the plugin name
-    Plugin.name = function () {
+    Plugin.getName = function () {
       return name;
     };
 
