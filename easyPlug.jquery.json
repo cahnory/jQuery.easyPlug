@@ -2,32 +2,29 @@
   "name": "easyPlug",
   "title": "easyPlug",
   "description": "Simplify the creation of jQuery plugin",
-  "keywords": [
-    "plugin",
-    "authoring"
-  ],
-  "version": "0.1.0",
+  "keywords": ["plugin","authoring"],
+  "version": "0.1.2",
   "author": {
-    "name": "François Germain",
-    "email": "cahnory@gmail.com",
-    "url": "http://www.cahnory.fr"
+    "name":   "François Germain",
+    "email":  "cahnory@gmail.com",
+    "url":    "http://www.cahnory.fr"
   },
   "maintainers": [
     {
-      "name": "François Germain",
-      "email": "cahnory@gmail.com",
-      "url": "http://www.cahnory.fr"
+      "name":   "François Germain",
+      "email":  "cahnory@gmail.com",
+      "url":    "http://www.cahnory.fr"
     }
   ],
-	"licenses": [
-		{
-			"type": "MIT",
-			"url": "http://opensource.org/licenses/MIT"
-		}
-	],
-  "bugs": "https://github.com/cahnory/jQuery.easyPlug/issues",
+  "licenses": [
+    {
+      "type":  "MIT",
+      "url":   "http://opensource.org/licenses/MIT"
+    }
+  ],
+  "bugs":     "https://github.com/cahnory/jQuery.easyPlug/issues",
   "homepage": "http://cahnory.github.com/jQuery.easyPlug/",
-  "docs": "http://cahnory.github.com/jQuery.easyPlug/",
+  "docs":     "http://cahnory.github.com/jQuery.easyPlug/",
   "download": "https://github.com/cahnory/jQuery.easyPlug/zipball/master",
   "dependencies": {
     "jquery": ">=1.2.3"
