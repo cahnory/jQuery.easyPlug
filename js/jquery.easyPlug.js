@@ -139,12 +139,12 @@
 
     // Prefix any event with plugin name
     Plugin.local = function (global) {
-      return name + '-' + global;
+      return global.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|^/g, '$1' + name + '-');
     };
 
     // Add namespace to any event
     Plugin.space = function (global) {
-      return global + '.easyPlug-' + name;
+      return global.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|$/g, '.easyPlug-' + name + '$1');
     };
 
     // Autonaming
