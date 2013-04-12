@@ -1,189 +1,154 @@
-/**
- * easyPlug
- *
- * LICENSE
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @author     François "cahnory" Germain <cahnory@gmail.com>
- * @license    http://www.opensource.org/licenses/mit-license.php
- */
-/*global jQuery*/
 (function ($) {
-  'use strict';
+    'use strict';
+    var nsPattern, callMethod, control, i18n, nsWriter;
 
-  // Call public method if defined
-  var callMethod = function (instance, method, args) {
-      if (typeof instance.methods[method] === 'function') {
-        // Method is returning something, break the chain.
-        return instance.methods[method].apply(instance, args);
-      }
-    },
-
-    // Return plugin instance and/or call plugin method
-    control = function (name, nodes, options, args) {
-      var Plugin = $[name],
-        output = nodes,
-        r;
-      nodes.each(function () {
-        var instance;
-
-        // Instanciation
-        if (undefined === (instance = $(this).data('easyPlug-' + name))) {
-          instance = new Plugin(this, options);
-        }
-
-        // Method calling
-        if (undefined !== (r = callMethod(instance, options, Array.prototype.slice.call(args, 1)))) {
-          output = r;
-        }
-      });
-      return output;
-    },
+    nsPattern = /(?:[^\w]*)(\w+)(?:[^\w]*)/g;
 
     // i18n std object
     i18n = {
-      // List of langs by preference order
-      langs: [],
-
-      // List of translations by lang > name
-      regionals: {},
-
-      getText: function (name, langs, placeholder) {
-        var i;
-
-        // Get array of langs
-        if (!langs) {
-          langs = this.langs;
-        } else if (typeof langs !== 'object') {
-          langs = [langs];
+        // List of langs by preference order
+        langs: [],
+        // List of translations by lang > name
+        regionals: {},
+        setLangs: function () {
+            this.langs = this.langs.concat(Array.prototype.slice.call(arguments));
         }
-
-        for (i = 0; i < langs.length; i += 1) {
-          if (this.regionals[langs[i]] !== undefined && this.regionals[langs[i]][name] !== undefined) {
-            return this.regionals[langs[i]][name];
-          }
-        }
-
-        return placeholder;
-      },
-      setLang: function (lang) {
-        var langs;
-        // Get array of langs
-        if (typeof lang !== 'object') {
-          if (arguments.length > 1) {
-            langs = arguments;
-          }
-        } else {
-          langs = $.extend({}, lang);
-        }
-
-        this.langs = langs;
-      }
     };
 
-  // Create the jQuery plugin
-  $.easyPlug = function (init, conf) {
-    var i,
-      name = conf.name,
+    // Calls public method if defined
+    callMethod = function (instance, method, args) {
+        var callback;
 
-      // Plugin constructor
-      Plugin = function (node, options) {
-        var element = $(node),
-          settings = $.extend({}, conf.presets, options);
+        callback = instance.methods[method];
 
-        // Public methods
-        this.methods = {
-          settings: function () {
-            return $.extend({}, settings);
-          }
+        if (typeof callback === 'function') {
+            // Method is returning something, break the chain.
+            return callback.apply(instance, args);
+        }
+    };
+
+    // Returns plugin instance and/or call plugin method
+    control = function (ns, nodes, options, args) {
+        var Plugin, output;
+
+        Plugin = $[ns];
+        output = nodes;
+
+        nodes.each(function () {
+            var instance, returnValue;
+
+            // Instanciation
+            instance = $(this).data('easyPlug-' + ns) || new Plugin(this, options);
+
+            // Method calling
+            returnValue = callMethod(instance, options, args);
+
+            if (returnValue !== undefined) {
+                output = returnValue;
+            }
+        });
+        return output;
+    };
+
+    // Returns a function that adds a namespace
+    nsWriter = function (ns) {
+        var localCallback, spaceCallback;
+        localCallback = function (source, str, pos) {
+            return (!pos ? '' : ' ') + ns + '-' + str;
+        };
+        spaceCallback = function (source, str, pos) {
+            return (!pos ? '' : ' ') + str + '.' + ns;
+        };
+        return function (type, str) {
+            return str.replace(nsPattern, type === 'local' ? localCallback : spaceCallback);
+        };
+    };
+
+    // Creates the jQuery plugin
+    $.easyPlug = function (init, conf) {
+        var ns, addNS, Plugin, getInstance, eventKey, regionalKey;
+
+        ns = conf.name || 'easyPlug' + new Date().getTime();
+        addNS = nsWriter(ns);
+
+        // Plugin constructor
+        Plugin = function (node, options) {
+            var element, settings;
+            element = $(node);
+            settings = $.extend({}, conf.presets, options);
+
+            // Public methods
+            this.methods = {
+                settings: function () {
+                    return $.extend({}, settings);
+                }
+            };
+
+            // i18n
+            if (Plugin.i18n) {
+                this.i18n = $.extend({}, Plugin.i18n);
+                // Share regionals between all instances
+                this.i18n.regionals = Plugin.i18n.regionals;
+                this.i18n.setLang(Plugin.i18n.lang);
+            }
+
+            // Save plugin instance
+            element.data('easyPlug-' + ns, this);
+            init.call(this, Plugin, element, settings, options);
         };
 
-        // i18n
-        if (Plugin.i18n) {
-          this.i18n = $.extend({}, Plugin.i18n);
-          // Share regionals between all instances
-          this.i18n.regionals = Plugin.i18n.regionals;
-          this.i18n.setLang(Plugin.i18n.lang);
+        // Prefixes any event with plugin name
+        Plugin.local = function (global) {
+            return addNS('local', global);
+        };
+
+        // Adds namespace to any event
+        Plugin.space = function (global) {
+            return addNS('space', global);
+        };
+
+        // Returns the plugin name
+        Plugin.getName = function () {
+            return ns;
+        };
+
+        // Returns a new instance of Plugin and/or call plugin method
+        getInstance = function (options) {
+            return control(ns, this, options, Array.prototype.slice.call(arguments, 1));
+        };
+
+        // Create the list of events
+        if (conf.events) {
+            Plugin.events = {};
+
+            // name: pluginName-name
+            for (eventKey in conf.events) {
+                if (conf.events.hasOwnProperty(eventKey)) {
+                    Plugin.events[conf.events[eventKey]] = Plugin.local(conf.events[eventKey]);
+                }
+            }
         }
 
-        // Save plugin instance
-        element.data('easyPlug-' + name, this);
-        init.call(this, Plugin, element, settings, options);
-      },
+        conf.presets = $.extend({}, conf.presets);
 
-      // Make a new instance of Plugin and/or call plugin method
-      getInstance = function (options) {
-        return control(name, this, options, arguments);
-      };
-
-    // Return the plugin name
-    Plugin.getName = function () {
-      return name;
-    };
-
-    // Prefix any event with plugin name
-    Plugin.local = function (global) {
-      return global.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|^/g, '$1' + name + '-');
-    };
-
-    // Add namespace to any event
-    Plugin.space = function (global) {
-      return global.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|$/g, '.easyPlug-' + name + '$1');
-    };
-
-    // Autonaming
-    if (!name) {
-      name = 'easyPlug' + (new Date().getTime());
-    }
-
-    // Create the list of events
-    if (conf.events) {
-      Plugin.events = {};
-
-      // name: pluginName-name
-      for (i in conf.events) {
-        if (conf.events.hasOwnProperty(i)) {
-          Plugin.events[conf.events[i]] = Plugin.local(conf.events[i]);
+        // Events list
+        if (conf.i18n) {
+            Plugin.i18n = $.extend({}, i18n, conf.i18n);
+            if (!Plugin.i18n.lang) {
+                for (regionalKey in Plugin.i18n.regionals) {
+                    if (Plugin.i18n.regionals.hasOwnProperty(regionalKey)) {
+                        Plugin.i18n.lang = regionalKey;
+                        break;
+                    }
+                }
+            }
         }
-      }
-    }
 
-    conf.presets = $.extend({}, conf.presets);
+        // Add to jQuery
+        $[ns] = Plugin;
+        $.fn[ns] = getInstance;
 
-    // Events list
-    if (conf.i18n) {
-      Plugin.i18n = $.extend({}, i18n, conf.i18n);
-      if (!Plugin.i18n.lang) {
-        for (i in Plugin.i18n.regionals) {
-          if (Plugin.i18n.regionals.hasOwnProperty(i)) {
-            Plugin.i18n.lang = i;
-            break;
-          }
-        }
-      }
-    }
-
-    // Add to jQuery
-    $[name] = Plugin;
-    $.fn[name] = getInstance;
-
-    return Plugin;
-  };
+        return Plugin;
+    };
 
 }(jQuery));
