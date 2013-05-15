@@ -3,7 +3,7 @@
   "title": "easyPlug",
   "description": "Simplify the creation of jQuery plugin",
   "keywords": ["plugin","authoring"],
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": {
     "name":   "François Germain",
     "email":  "cahnory@gmail.com",
