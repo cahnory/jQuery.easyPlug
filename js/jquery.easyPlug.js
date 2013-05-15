@@ -28,7 +28,8 @@
   'use strict';
 
   // Call public method if defined
-  var callMethod = function (instance, method, args) {
+  var
+    callMethod = function (instance, method, args) {
       if (typeof instance.methods[method] === 'function') {
         // Method is returning something, break the chain.
         return instance.methods[method].apply(instance, args);
@@ -37,19 +38,20 @@
 
     // Return plugin instance and/or call plugin method
     control = function (name, nodes, options, args) {
-      var Plugin = $[name],
-        output = nodes,
-        r;
+      var
+        Plugin = $[name],
+        output = nodes;
       nodes.each(function () {
-        var instance;
+        var r, instance = $(this).data('easyPlug-' + name);
 
         // Instanciation
-        if (undefined === (instance = $(this).data('easyPlug-' + name))) {
+        if (instance === undefined) {
           instance = new Plugin(this, options);
         }
 
         // Method calling
-        if (undefined !== (r = callMethod(instance, options, Array.prototype.slice.call(args, 1)))) {
+        r = callMethod(instance, options, Array.prototype.slice.call(args, 1));
+        if (r !== undefined) {
           output = r;
         }
       });
@@ -98,39 +100,55 @@
     };
 
   // Create the jQuery plugin
-  $.easyPlug = function (init, conf) {
-    var i,
-      name = conf.name,
+  $.easyPlug = function (construct, conf) {
+    var i, name, Plugin, getInstance, initied;
 
-      // Plugin constructor
-      Plugin = function (node, options) {
-        var element = $(node),
-          settings = $.extend({}, conf.presets, options);
+    if (typeof construct === 'function') {
+      conf.construct = construct;
+    } else {
+      conf = construct;
+    }
+    name = conf.name;
 
-        // Public methods
-        this.methods = {
-          settings: function () {
-            return $.extend({}, settings);
-          }
-        };
+    // Make a new instance of Plugin and/or call plugin method
+    getInstance = function (options) {
+      return control(name, this, options, arguments);
+    };
 
-        // i18n
-        if (Plugin.i18n) {
-          this.i18n = $.extend({}, Plugin.i18n);
-          // Share regionals between all instances
-          this.i18n.regionals = Plugin.i18n.regionals;
-          this.i18n.setLang(Plugin.i18n.lang);
+    // Plugin constructor
+    Plugin = function (node, options) {
+      var element = $(node),
+        settings = $.extend({}, conf.presets, options);
+
+      // Public methods
+      this.methods = {
+        settings: function () {
+          return $.extend({}, settings);
         }
-
-        // Save plugin instance
-        element.data('easyPlug-' + name, this);
-        init.call(this, Plugin, element, settings, options);
-      },
-
-      // Make a new instance of Plugin and/or call plugin method
-      getInstance = function (options) {
-        return control(name, this, options, arguments);
       };
+
+      // i18n
+      if (Plugin.i18n) {
+        this.i18n = $.extend({}, Plugin.i18n);
+        // Share regionals between all instances
+        this.i18n.regionals = Plugin.i18n.regionals;
+        this.i18n.setLang(Plugin.i18n.lang);
+      }
+
+      // Save plugin instance
+      element.data('easyPlug-' + name, this);
+
+      // Call init if provided
+      if (!initied) {
+        initied = true;
+        if (typeof conf.init === 'function') {
+          conf.init.call(this, Plugin, element, settings, options);
+        }
+      }
+
+      // Call constructor
+      conf.construct.call(this, Plugin, element, settings, options);
+    };
 
     // Return the plugin name
     Plugin.getName = function () {
