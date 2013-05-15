@@ -3,21 +3,18 @@
 EasyPlug is (until now) a single function attached to the jQuery object.
 It allows you to define a jQuery plugin easily.
 
+Since 0.1.3:
+
+```
+$.easyPlug( settings );
+```
+
+The old syntaxe is still supported but deprecated:
+
 ```
 $.easyPlug( constructor [, settings ] );
 ```
 ## Parameters
-
-### constructor
-
-A function called on instantiation. A plugin instance is created for each element in the set of matched elements.
-
-The constructor has four arguments :
-
-+ **Plugin**: the Plugin object
-+ **element**: jQuery object with a single element from the original set of elements
-+ **settings**: Merged contents of plugin presets and user options
-+ **options**: Original user options
 
 ### settings
 
@@ -28,8 +25,24 @@ Here is the list of properties:
 + **name**: the name of your plugin. If you don't provide a name, an unique one will be generated
 + **presets**: default settings objects. A copy of it, merged with user options, is provided on instantiation.
 + **events**: an array of event name. Event names will be prefixed by easyPlug (e.g. *ready* become *pluginName-ready*)
++ **construct**: A function called on instantiation.
++ **init**: A function called juste before the constructor of the first instantiation.
 
-None of this properties is required.
+The single required property is *construct* unless the old syntaxe is used.
+
+#### Construct & init
+
+A plugin instance is created for each element in the set of matched elements.
+After each plugin instanciation, the *construct* function is called.
+
+*Construct* has four arguments :
+
++ **Plugin**: the Plugin object
++ **element**: jQuery object with a single element from the original set of elements
++ **settings**: Merged contents of plugin presets and user options
++ **options**: Original user options
+
+The *init* function is executed on the first instanciation, just before the call of *construct*.
 
 ## Returns
 
