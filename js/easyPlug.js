@@ -8,11 +8,12 @@
   // Prefix for all easyPlug helped plugins
   ns  = 'easyPlug-',
 
-  // Defines a new jQuery plugin
+  // !easyPlug : defines a new jQuery plugin
+  // ===========================================================
   easyPlug = function (manifest) {
-    var Plugin, name, i;
+    var Plugin, name, awake, i;
 
-    // Create plugin object
+    // !Create plugin object
     // =========================================================
     Plugin = function (element, settings) {
       // Reference plugin instance
@@ -20,26 +21,38 @@
 
       // Define settings
       this.settings = $.extend({}, Plugin.presets, settings);
+
+      // Call init if first instance
+      if (!awake && typeof manifest.init === 'function') {
+        awake = true;
+        manifest.init.call(Plugin);
+      }
+
+      // Call constructor
+      if (typeof manifest.construct === 'function') {
+        manifest.construct.call(this);
+      }
     };
 
     // Name the plugin
     name = manifest.name || (new Date().getTime());
 
 
-    // Plugin methods ("static")
+    // !Plugin methods ("static")
     // ---------------------------------------------------------
+    // TODO: try avoid regex
 
     // add prefix to one or many custom events, data,…
     Plugin.local = function (generic) {
-      return generic.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|^/g, '$1' + name + '-');
+      return generic.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|^/g, '$1' + ns + name + '-');
     };
 
     // Add namespace to one or many events (binding)
     Plugin.space = function (global) {
-      return global.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|$/g, '.easyPlug-' + name + '$1');
+      return global.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|$/g, '.' + ns + name + '$1');
     };
 
-    // Define attributes ("static")
+    // !Define attributes ("static")
     // ---------------------------------------------------------
 
     // Plugin presets
@@ -57,40 +70,52 @@
     // Prototype shortcut as for jQuery
     Plugin.fn = Plugin.prototype;
 
-    // Define in jQuery
-    $[name]     = Plugin;
-    $.fn[name]  = function (options) {
-      var i, plugin, element;
+
+    // !Define in jQuery
+    // ---------------------------------------------------------
+
+    // Define plugin in jQuery ("static")
+    $[name] = Plugin;
+
+    // Define plugin controller
+    $.fn[name]  = function () {
+      var i, plugin, element, result,
+
+      // For mimification
+      option  = arguments[0],
+      args    = Array.prototype.slice.call(arguments, 1);
 
       // Loop through element collection
       for (i = 0; i < this.length; i++) {
         element = this.eq(i);
   
         // Get instance
-        plugin = element.data('_' + ns + name) || new Plugin(element, arguments[0]);
+        plugin = element.data('_' + ns + name) || new Plugin(element, option);
 
         // Call method if exists
-        if (typeof plugin[arguments[0]] === 'function') {
-          result = plugin[arguments[0]].apply(plugin, Array.prototype.slice.call(arguments, 2));
+        if (typeof plugin[option] === 'function') {
+          result = plugin[option].apply(plugin, args);
 
-          // Break the chain if method returns
-          if (result !== undefined) {
-            return result;
-          }
+        // Call invoke if exists and unknown method
+        } else if (typeof manifest.invoke === 'function' && typeof option === 'string') {
+          result = manifest.invoke.call(plugin, option, args);
+        }
+
+        // Break the chain if method returns
+        if (result !== undefined) {
+          return result;
         }
       }
 
       // Keep the chain
       return this;
     };
+
+    // Return the plugin for prototyping and conveniance
+    return Plugin;
   };
 
-  easyPlug.prototype = {
-    prefixEvents: function (prefix, events) {
-      //events
-    }
-  };
-
+  // Attach easyPlug to jQuery
   $.easyPlug = easyPlug;
 
 }(jQuery));
