@@ -1,0 +1,55 @@
+<!DOCTYPE html> 
+<html lang="fr" dir="ltr" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <title></title>
+  <script>document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, 'js');</script>
+</head>
+<body>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <script src="js/jquery-1.2.3.js"></script>
+  <script src="js/easyPlug.js"></script>
+  <script>
+    console.log(
+      $('div').each(function () {}),
+      $('div').each(function (i) {
+        if (i == 4) {
+          console.log(arguments);
+          return false;
+        }
+      })
+    );
+    
+    var P = $.easyPlug({
+      name: 'test',
+      events: ['click'],
+      construct: function () {
+        console.log('construct');
+      },
+      init: function () {
+        console.log('init');
+      },
+      invoke: function (name, args) {
+        console.log('invoke ' + name);
+      }
+    });
+    
+    P.fn.foo = function () {
+      console.log('bar');
+      console.log(arguments);
+      return true;
+    };
+
+    $('div').test().test('o').test('foo', 'a','b','c');
+  </script>
+</body>
+</html>
