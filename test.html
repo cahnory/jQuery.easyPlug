@@ -19,37 +19,48 @@
   <script src="js/jquery-1.2.3.js"></script>
   <script src="js/easyPlug.js"></script>
   <script>
-    console.log(
-      $('div').each(function () {}),
-      $('div').each(function (i) {
-        if (i == 4) {
-          console.log(arguments);
-          return false;
-        }
-      })
-    );
-    
-    var P = $.easyPlug({
-      name: 'test',
-      events: ['click'],
+    var id, Plugin;
+
+    Plugin = $.easyPlug({
+      name: 'demo',
+      events: ['ready'],
+      presets:  {
+        foo: 'foo'
+      },
       construct: function () {
-        console.log('construct');
+        console.log('construct ' + id);
+        id++;
+        this.element.trigger($.demo.events.ready);
       },
       init: function () {
+        id = 1;
         console.log('init');
       },
       invoke: function (name, args) {
         console.log('invoke ' + name);
       }
     });
-    
-    P.fn.foo = function () {
-      console.log('bar');
-      console.log(arguments);
-      return true;
+
+    Plugin.fn.foo = function () {
+      return this.settings.foo;
     };
 
-    $('div').test().test('o').test('foo', 'a','b','c');
+
+    console.log(
+
+      $('div:lt(5)')
+        .demo('foo'),
+
+      $('div:gt(4)')
+        .bind($.demo.events.ready, function () {
+          console.log('ready !')
+        })
+        .demo({foo: 'bar'})
+        .demo('foo'),
+
+      $.demo.events.ready
+    );
+
   </script>
 </body>
 </html>

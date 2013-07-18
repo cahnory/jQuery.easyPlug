@@ -13,6 +13,9 @@
   easyPlug = function (manifest) {
     var Plugin, name, awake, i;
 
+    // Prepare manifest
+    manifest = manifest || {};
+
     // !Create plugin object
     // =========================================================
     Plugin = function (element, settings) {
@@ -35,7 +38,7 @@
     };
 
     // Name the plugin
-    name = manifest.name || (new Date().getTime());
+    name = manifest.name || ns + (new Date().getTime());
 
 
     // !Plugin methods ("static")
@@ -43,13 +46,18 @@
     // TODO: try avoid regex
 
     // add prefix to one or many custom events, data,…
-    Plugin.local = function (generic) {
+    Plugin.prefix = function (generic) {
       return generic.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|^/g, '$1' + ns + name + '-');
     };
 
     // Add namespace to one or many events (binding)
     Plugin.space = function (global) {
       return global.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|$/g, '.' + ns + name + '$1');
+    };
+
+    // Return the plugin name
+    Plugin.getName = function () {
+      return name;
     };
 
     // !Define attributes ("static")
@@ -63,7 +71,7 @@
       Plugin.events = {};
       for (i = 0; i < manifest.events.length; i++) {
         // eventName: 'easyPlug-pluginName-eventName'
-        Plugin.events[manifest.events[i]] = Plugin.local(manifest.events[i]);
+        Plugin.events[manifest.events[i]] = Plugin.prefix(manifest.events[i]);
       }
     }
 
@@ -79,32 +87,35 @@
 
     // Define plugin controller
     $.fn[name]  = function () {
-      var i, plugin, element, result,
-
-      // For mimification
-      option  = arguments[0],
-      args    = Array.prototype.slice.call(arguments, 1);
+      var
+        result,
+        option  = arguments[0],
+        args    = Array.prototype.slice.call(arguments, 1);
 
       // Loop through element collection
-      for (i = 0; i < this.length; i++) {
-        element = this.eq(i);
+      this.each(function () {
+        var plugin, element = $(this);
   
         // Get instance
         plugin = element.data('_' + ns + name) || new Plugin(element, option);
 
-        // Call method if exists
-        if (typeof plugin[option] === 'function') {
-          result = plugin[option].apply(plugin, args);
-
-        // Call invoke if exists and unknown method
-        } else if (typeof manifest.invoke === 'function' && typeof option === 'string') {
-          result = manifest.invoke.call(plugin, option, args);
+        // Try to call only if no result
+        // but keep looping for possible instantiations
+        if (result === undefined) {
+          // Call method if exists
+          if (typeof plugin[option] === 'function') {
+            result = plugin[option].apply(plugin, args);
+  
+          // Call invoke if exists and unknown method
+          } else if (typeof manifest.invoke === 'function' && typeof option === 'string') {
+            result = manifest.invoke.call(plugin, option, args);
+          }
         }
+      });
 
-        // Break the chain if method returns
-        if (result !== undefined) {
-          return result;
-        }
+      // Break the chain if method returns
+      if (result !== undefined) {
+        return result;
       }
 
       // Keep the chain
