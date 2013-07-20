@@ -86,10 +86,9 @@
     $[name] = Plugin;
 
     // Define plugin controller
-    $.fn[name]  = function () {
+    $.fn[name]  = function (option) {
       var
         result,
-        option  = arguments[0],
         args    = Array.prototype.slice.call(arguments, 1);
 
       // Loop through element collection
