@@ -3,7 +3,7 @@
   "title": "easyPlug",
   "description": "Simplify the creation of jQuery plugin",
   "keywords": ["plugin","authoring"],
-  "version": "0.1.4",
+  "version": "0.2.0",
   "author": {
     "name":   "François Germain",
     "email":  "cahnory@gmail.com",
@@ -22,10 +22,10 @@
       "url":   "http://opensource.org/licenses/MIT"
     }
   ],
-  "bugs":     "https://github.com/cahnory/jQuery.easyPlug/issues",
+  "bugs":     "http://cahnory.github.com/jQuery.easyPlug/",
   "homepage": "http://cahnory.github.com/jQuery.easyPlug/",
   "docs":     "http://cahnory.github.com/jQuery.easyPlug/",
-  "download": "https://github.com/cahnory/jQuery.easyPlug/zipball/master",
+  "download": "http://cahnory.github.com/jQuery.easyPlug/",
   "dependencies": {
     "jquery": ">=1.2.3"
   }
