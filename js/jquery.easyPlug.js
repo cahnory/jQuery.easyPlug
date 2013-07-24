@@ -75,8 +75,8 @@
       };
 
       // Add namespace to one or many events (binding)
-      Plugin.space = function (global) {
-        return global.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|$/g, '.' + ns + name + '$1');
+      Plugin.space = function (global, local) {
+        return global.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|$/g, '.' + ns + name + (local && '.' + local || '') + '$1');
       };
 
       // Return the plugin name
