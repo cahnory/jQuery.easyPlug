@@ -158,4 +158,9 @@
     return element.data(namespace + plugin) instanceof $[plugin];
   };
 
+  // Return 'plugin' instance of 'element'
+  $[easyPlug].getPlugin = function (element, plugin) {
+    return element.data(namespace + plugin);
+  };
+
 }(jQuery));
