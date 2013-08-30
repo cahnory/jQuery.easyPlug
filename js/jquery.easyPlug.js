@@ -159,7 +159,7 @@
   };
 
   // Return 'plugin' instance of 'element'
-  $[easyPlug].getPlugin = function (element, plugin) {
+  $[easyPlug].getInstance = function (element, plugin) {
     return element.data(namespace + plugin);
   };
 
