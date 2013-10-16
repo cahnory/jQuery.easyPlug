@@ -72,13 +72,13 @@
     // TODO: try avoid regex
 
     // add prefix to one or many custom events, data,…
-    Plugin.prefix = function (generic) {
+    Plugin.addPrefix = function (generic) {
       // $1: space or ^start
       return generic.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|^/g, '$1' + namespace + name + '-');
     };
 
     // Add namespace to one or many events (binding)
-    Plugin.space = function (global, local) {
+    Plugin.addNamespace = function (global, local) {
       // $1: space or $end
       return global.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|$/g, '.' + namespace + name + (local && '.' + local || '') + '$1');
     };
@@ -99,7 +99,7 @@
       Plugin.events = {};
       for (i = 0; i < manifest.events.length; i++) {
         // eventName: 'easyPlug-pluginName-eventName'
-        Plugin.events[manifest.events[i]] = Plugin.prefix(manifest.events[i]);
+        Plugin.events[manifest.events[i]] = Plugin.addPrefix(manifest.events[i]);
       }
     }
 
