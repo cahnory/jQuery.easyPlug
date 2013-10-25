@@ -20,7 +20,7 @@
     <header>
       <div class="inner">
         <h1>Jquery.easyplug</h1>
-        <h2>Simplify the creation of jQuery plugin</h2>
+        <h2>Simplify jQuery plugin authoring</h2>
         <a href="https://github.com/cahnory/jQuery.easyPlug" class="button"><small>View project on</small>GitHub</a>
       </div>
     </header>
@@ -28,153 +28,171 @@
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-          <h1>Usage</h1>
+          <h1>
+<a name="what-is-easyplug" class="anchor" href="#what-is-easyplug"><span class="octicon octicon-link"></span></a>What is easyPlug?</h1>
 
-<p>EasyPlug is (until now) a single function attached to the jQuery object.
-It allows you to define a jQuery plugin easily.</p>
+<p>EasyPlug simplify jQuery plugin authoring.</p>
 
-<p>Since 0.1.3:</p>
+<p>Plugin creation only requires a definition object described below. <strong>All jQuery related stuff is done for you</strong>.</p>
 
-<pre><code>$.easyPlug( settings );
-</code></pre>
+<p>While it's quicker to edit it pushes conventions over all <em>easyPlugged</em> plugins.</p>
 
-<p>The old syntaxe is still supported but deprecated:</p>
+<h1>
+<a name="how-it-works" class="anchor" href="#how-it-works"><span class="octicon octicon-link"></span></a>How it works?</h1>
 
-<pre><code>$.easyPlug( constructor [, settings ] );
-</code></pre>
+<p>To create your plugin, all you have to do is passing to easyPlug a <strong>definition object</strong> like this one:</p>
 
-<h2>Parameters</h2>
-
-<h3>settings</h3>
-
-<p>An object of settings providing informations to easyPlug in order to prepare the plugin.</p>
-
-<p>Here is the list of properties:</p>
-
-<ul>
-<li>
-<strong>name</strong>: the name of your plugin. If you don't provide a name, an unique one will be generated</li>
-<li>
-<strong>presets</strong>: default settings objects. A copy of it, merged with user options, is provided on instantiation.</li>
-<li>
-<strong>events</strong>: an array of event name. Event names will be prefixed by easyPlug (e.g. <em>ready</em> become <em>pluginName-ready</em>)</li>
-<li>
-<strong>construct</strong>: A function called on instantiation.</li>
-<li>
-<strong>init</strong>: A function called juste before the constructor of the first instantiation.</li>
-</ul><p>The single required property is <em>construct</em> unless the old syntaxe is used.</p>
-
-<h4>Construct &amp; init</h4>
-
-<p>A plugin instance is created for each element in the set of matched elements.
-After each plugin instanciation, the <em>construct</em> function is called.</p>
-
-<p><em>Construct</em> has four arguments :</p>
-
-<ul>
-<li>
-<strong>Plugin</strong>: the Plugin object</li>
-<li>
-<strong>element</strong>: jQuery object with a single element from the original set of elements</li>
-<li>
-<strong>settings</strong>: Merged contents of plugin presets and user options</li>
-<li>
-<strong>options</strong>: Original user options</li>
-</ul><p>The <em>init</em> function is executed on the first instanciation, just before the call of <em>construct</em>.</p>
-
-<h2>Returns</h2>
-
-<h3>Plugin object</h3>
-
-<p>The Plugin object. You can, for example, add "static" properties and/or methods to it.</p>
-
-<h1>How it helps ?</h1>
-
-<h2>Add to jQuery</h2>
-
-<p>EasyPlug attach the plugin controller to the jQuery <em>fn</em> property (prototype). The controller instantiate plugin if needed and/or call public method.<br>
-The controller is called each time you call your plugin:</p>
-
-<pre><code>$( selection ).pluginName();
-</code></pre>
-
-<p>EasyPlug also attach the Plugin object directly on the jQuery object, acting as "static":</p>
-
-<pre><code>$.pluginName;
-</code></pre>
-
-<h2>Chainability</h2>
-
-<p>If no public method is called or, if the method returns undefined, the controller returns the set of matche elements.<br>
-If a public method does not return undefined, the value is directly returned.</p>
-
-<pre><code>$( selection ).pluginName().attr( 'foo', 'bar' );
-</code></pre>
-
-<h2>Public methods</h2>
-
-<h3>Declaration</h3>
-
-<p>To declare your public method, you have to add it to the <em>methods</em> property in your constructor:</p>
-
-<pre><code>$.easyPlug(function() {
-  this.methods.methodName = function( [ argument, … ] ) {
-    // instructions
-  };
+<pre><code>// Return your plugin class
+Plugin = $.easyPlug({
+  name:      'example',
+  construct: function () {}
 });
 </code></pre>
 
-<h3>Calling</h3>
+<h2>
+<a name="definition-object" class="anchor" href="#definition-object"><span class="octicon octicon-link"></span></a>Definition object</h2>
 
-<p>To call a public method, all you have to do is to pass its name as first argument:</p>
+<p>Definition object does not require any member.</p>
 
-<pre><code>$( selection ).pluginName( 'methodName' [, argument, … ] );
+<h3>
+<a name="construct-function" class="anchor" href="#construct-function"><span class="octicon octicon-link"></span></a>construct <em>(function)</em>
+</h3>
+
+<p>A function called each time the plugin is instanciate for an element.</p>
+
+<h3>
+<a name="events-array" class="anchor" href="#events-array"><span class="octicon octicon-link"></span></a>events <em>(array)</em>
+</h3>
+
+<p>A list of custom events. Each event name will be prefixed and added to the events member of the Plugin:</p>
+
+<pre><code>$.easyPlug({
+  name:   'example'
+  events: ['foo']
+});
+
+// 'easyPlug__example-foo'
+$.example.events.foo;
 </code></pre>
 
-<h3>Predefined methods</h3>
+<h3>
+<a name="init-function" class="anchor" href="#init-function"><span class="octicon octicon-link"></span></a>init <em>(function)</em>
+</h3>
 
-<p>Until now there is a single predefined method.</p>
+<p>A function called when instanciating the Plugin for the first time.</p>
 
-<ul>
-<li>
-<strong>settings</strong>(): returns a copy of the settings object</li>
-</ul><h2>Custom events</h2>
+<h3>
+<a name="invoke-function" class="anchor" href="#invoke-function"><span class="octicon octicon-link"></span></a>invoke <em>(function)</em>
+</h3>
 
-<p>All custom events are automatically prefixed in order to avoid conflicts between public and standard events.</p>
+<p>A function called when invoking inaccessible methods:</p>
 
-<p>Custom events are defined in the <em>events</em> property of the Plugin objects.</p>
-
-<pre><code>$.pluginName.events.custom; // pluginName-custom
+<pre><code>$.easyPlug({
+  invoke: function (name, args) {}
+});
 </code></pre>
 
-<h2>"Static" public methods</h2>
+<h3>
+<a name="name-string" class="anchor" href="#name-string"><span class="octicon octicon-link"></span></a>name <em>(string)</em>
+</h3>
 
-<h3>Declaration</h3>
+<p>The name of your plugin.</p>
 
-<p>To declare your static public method, you have to add it directly on the Plugin object:</p>
+<pre><code>$.easyPlug({name: 'example'});
 
-<pre><code>$.pluginName.methodName = function( [ argument, … ] ) {
-  // instructions
-};
+// Plugin class
+$.example;
+
+// Plugin instance
+$('.some-elements').example();
 </code></pre>
 
-<h3>Calling</h3>
+<h3>
+<a name="presets-object" class="anchor" href="#presets-object"><span class="octicon octicon-link"></span></a>presets <em>(object)</em>
+</h3>
 
-<p>Static public method are called like any javascript method:</p>
+<p>Properties used by the plugin. Each plugin instance get an object combining presets and options passed by the user on instanciation:</p>
 
-<pre><code>$.pluginName.methodName( [ argument, … ] );
+<pre><code>// $.extend({}, presets, options)
+this.settings;
 </code></pre>
 
-<h3>Predefined methods</h3>
+<h3>
+<a name="prototype-object" class="anchor" href="#prototype-object"><span class="octicon octicon-link"></span></a>prototype <em>(object)</em>
+</h3>
 
-<ul>
-<li>
-<strong>getName</strong>(): returns the plugin name</li>
-<li>
-<strong>local</strong>( string ): returns a string prefixed with '*pluginName*-'</li>
-<li>
-<strong>space</strong>( string ): returns a string suffixed with '.easyPlug-*pluginName*'</li>
-</ul>
+<p>The prototype of your Plugin. Each method of the prototype could be called like thid:</p>
+
+<pre><code>$('.some-elements').example('methodName', arg1, arg2);
+</code></pre>
+
+<h2>
+<a name="plugin-methods" class="anchor" href="#plugin-methods"><span class="octicon octicon-link"></span></a>Plugin methods</h2>
+
+<p>EasyPlug defines "static" methods to each Plugin it generates.</p>
+
+<h3>
+<a name="addprefixstringtoprefix" class="anchor" href="#addprefixstringtoprefix"><span class="octicon octicon-link"></span></a>addPrefix(stringToPrefix)</h3>
+
+<p>Add a prefix uniq to the Plugin to any word in the string. It's this function which prefixes custom events.</p>
+
+<pre><code>// 'easyPlug__example-foo easyPlug__example-bar'
+$.example.addPrefix('foo bar');
+</code></pre>
+
+<h3>
+<a name="addnamespacestringtonamespace-local" class="anchor" href="#addnamespacestringtonamespace-local"><span class="octicon octicon-link"></span></a>addNamespace(stringToNamespace[, local])</h3>
+
+<p>Add a namespace uniq to the Plugin to any word in the string. Use this when binding, setting/getting data,… in your plugin.</p>
+
+<pre><code>// 'foo.easyPlug__example bar.easyPlug__example'
+$.example.addNamespace('foo bar');
+
+// 'foo.easyPlug__example.myNS bar.easyPlug__example.myNS'
+$.inlineput.addNamespace('foo bar', 'myNS');
+</code></pre>
+
+<h3>
+<a name="getname" class="anchor" href="#getname"><span class="octicon octicon-link"></span></a>getName()</h3>
+
+<p>Return the name of the plugin.</p>
+
+<pre><code>// 'example'
+$.example.getName();
+</code></pre>
+
+<h2>
+<a name="easyplug-methods" class="anchor" href="#easyplug-methods"><span class="octicon octicon-link"></span></a>easyPlug methods</h2>
+
+<h3>
+<a name="ispluggedtoelement-plugin" class="anchor" href="#ispluggedtoelement-plugin"><span class="octicon octicon-link"></span></a>isPluggedTo(element, plugin)</h3>
+
+<p>Tell if the element was plugged by a particular plugin:</p>
+
+<pre><code>// false
+$.easyPlug.isPluggedTo($('#single-element'), 'example');
+
+// Here, element could be in a larger collection
+$('#single-element').example();
+
+// true
+$.easyPlug.isPluggedTo($('#single-element'), 'example');
+</code></pre>
+
+<h3>
+<a name="getinstanceelement-plugin" class="anchor" href="#getinstanceelement-plugin"><span class="octicon octicon-link"></span></a>getInstance(element, plugin)</h3>
+
+<p>Return the plugin instance of an element if exists:</p>
+
+<pre><code>// undefined
+$.easyPlug.getInstance($('#single-element'), 'example');
+
+// Here, element could be in a larger collection
+$('#single-element').example();
+
+// Return the plugin instance
+$.easyPlug.getInstance($('#single-element'), 'example');
+</code></pre>
         </section>
 
         <aside id="sidebar">
@@ -189,7 +207,7 @@ If a public method does not return undefined, the value is directly returned.</p
 
           <p class="repo-owner"><a href="https://github.com/cahnory/jQuery.easyPlug"></a> is maintained by <a href="https://github.com/cahnory">cahnory</a>.</p>
 
-          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.</p>
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
         </aside>
       </div>
     </div>
