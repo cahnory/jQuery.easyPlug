@@ -2,12 +2,9 @@
 
 EasyPlug simplify jQuery plugin authoring.
 
-Plugin creation only requires a definition object described below.  
-**All jQuery related stuff is done for you**.
+Plugin creation only requires a definition object described below. **All jQuery related stuff is done for you**.
 
 While it's quicker to edit it pushes conventions over all *easyPlugged* plugins.
-
-It allows you to define a jQuery plugin with a single manifest object like this :
 
 # How it works?
 
