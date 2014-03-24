@@ -2,7 +2,7 @@
   "name": "easyPlug",
   "title": "easyPlug",
   "description": "Simplify the creation of jQuery plugin",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "http://cahnory.github.io/jQuery.easyPlug/",
   "author": {
     "name": "François Germain",

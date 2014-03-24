@@ -1,4 +1,4 @@
-/*! easyPlug - v0.2.0 - 2014-03-24
+/*! easyPlug - v0.2.1 - 2014-03-24
 * http://cahnory.github.io/jQuery.easyPlug/
 * Copyright (c) 2014 François Germain; Licensed MIT */
 (function ($) {
