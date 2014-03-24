@@ -23,8 +23,6 @@
  * @author     François "cahnory" Germain <cahnory@gmail.com>
  * @license    http://www.opensource.org/licenses/mit-license.php
  */
-/*jslint browser: true, todo: true, plusplus: true, indent: 2 */
-/*global jQuery */
 (function ($) {
   'use strict';
 
@@ -69,7 +67,6 @@
 
     // !Plugin methods ("static")
     // ---------------------------------------------------------
-    // TODO: try avoid regex
 
     // add prefix to one or many custom events, data,…
     Plugin.addPrefix = function (generic) {
@@ -80,7 +77,7 @@
     // Add namespace to one or many events (binding)
     Plugin.addNamespace = function (global, local) {
       // $1: space or $end
-      return global.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|$/g, '.' + namespace + name + (local && '.' + local || '') + '$1');
+      return global.replace(/^[\s]+|[\s]+$/g, '').replace(/([\s])+|$/g, '.' + namespace + name + ((local && '.' + local) || '') + '$1');
     };
 
     // Return the plugin name

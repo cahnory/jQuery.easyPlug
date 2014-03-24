@@ -18,14 +18,18 @@
   ],
   "licenses": [
     {
-      "type":  "MIT",
-      "url":   "http://opensource.org/licenses/MIT"
+      "type": "MIT",
+      "url": "http://cahnory.github.com/jQuery.easyPlug/blob/master/LICENSE-MIT"
     }
   ],
-  "bugs":     "http://cahnory.github.com/jQuery.easyPlug/",
-  "homepage": "http://cahnory.github.com/jQuery.easyPlug/",
-  "docs":     "http://cahnory.github.com/jQuery.easyPlug/",
-  "download": "http://cahnory.github.com/jQuery.easyPlug/",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cahnory/jQuery.easyPlug.git"
+  },
+  "bugs":     "https://github.com/cahnory/jQuery.easyPlug/issues",
+  "homepage": "http://cahnory.github.io/jQuery.easyPlug/",
+  "docs":     "http://cahnory.github.io/jQuery.easyPlug/",
+  "download": "http://cahnory.github.io/jQuery.easyPlug/",
   "dependencies": {
     "jquery": ">=1.2.3"
   }

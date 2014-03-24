@@ -1,0 +1,32 @@
+{
+  "name": "easyPlug",
+  "title": "easyPlug",
+  "description": "Simplify the creation of jQuery plugin",
+  "version": "0.2.0",
+  "homepage": "http://cahnory.github.io/jQuery.easyPlug/",
+  "author": {
+    "name": "François Germain",
+    "email": "cahnory@gmail.com",
+    "url": "http://www.cahnory.fr"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cahnory/jQuery.easyPlug.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cahnory/jQuery.easyPlug/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://cahnory.github.io/jQuery.easyPlug/blob/master/LICENSE-MIT"
+    }
+  ],
+  "dependencies": {
+    "jquery": ">=1.2.3"
+  },
+  "devDependencies": {
+    "qunit": "*"
+  },
+  "keywords": []
+}
